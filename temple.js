@@ -1,4 +1,4 @@
-$.fn.templ = function(stash) {
+$.fn.temple = function(stash) {
     var rootNode = this,
         childNodes = rootNode.find('[data-templ]'),
         stencil;
