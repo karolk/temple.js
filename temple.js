@@ -17,7 +17,7 @@ $.fn.temple = function(stash) {
                 }
                 stashArray.forEach(function(stashArrayElem) {
                     var $subNode = stencil.clone();
-                    $subNode.templ(stashArrayElem)
+                    $subNode.temple(stashArrayElem)
                     $node.append($subNode);
                 })
             }
