@@ -41,8 +41,8 @@ This is how to invoke merging:
 Todo:
 
     * partial updates (and real life example)
-    * consider removing isCollectionNode and use firstChild as a stencil no matter what tag that is
-    * start looking for data-templ on the rootNode
+    * <del>consider removing isCollectionNode and use firstChild as a stencil no matter what tag that is</del>
+    * <del>start looking for data-templ on the rootNode</del>
     * consider scenarion where stencil is a leaf node, and simplify stash creation
-    * convert gist to a project
+    * <del>convert gist to a project</del>
     * maybe returning augmented stash with references to html nodes
