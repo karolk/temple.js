@@ -1,21 +1,42 @@
 (function($) {
 
-$.fn.templeLeaf = function(propName, propValue) {
-        
-    if ( (typeof propValue).match(/string|number/) ) {
-        this
-            .filter('[data-templ="'+propName+'"]')
-            .text(propValue);
-        this
-            .filter('[data-templ-html="'+propName+'"]')
-            .html(propValue);
-    }
-    else {
-        if ('attr' in propValue) {
+$.fn.templeLeaf = function(propName, propValue, currentStash) {
+    
+    var typeOfPropValue = typeof propValue;
+    
+    switch(typeOfPropValue) {
+    
+        case 'string':
+        case 'number':
+            var htmlContainer = this.filter('[data-templ-html~="'+propName+'"]');
+            
+            if (htmlContainer.length) {
+                var newNodes = $(propValue);
+                if (newNodes.length) {
+                    htmlContainer.empty().append(newNodes);
+                    //newly created stash might complain data-templ
+                    //attribs, then they might want to attempt
+                    //to be templated
+                    currentStash && newNodes.temple(currentStash);
+                }
+            }
+            
             this
-                .filter('[data-templ="'+propName+'"]')
-                .attr(propValue.attr, propValue.value)
-        }
+                .filter('[data-templ~="'+propName+'"]')
+                .text(propValue);
+        break;
+        
+        case 'object':
+            if (propValue===null) {
+                this.filter('[data-templ~="'+propName+'"]').remove();
+            }
+            else {
+                this
+                .filter('[data-templ~="'+propName+'"]')
+                .attr(propValue.attr, propValue.value);
+            }
+        break;
+        
     }
     
     return this;
@@ -25,20 +46,21 @@ $.fn.templeLeaf = function(propName, propValue) {
 $.fn.temple = function(stash) {
     var rootNode = this,
         dataSelector = '[data-templ], [data-templ-html]',
+        stencil,
         dataNodes = rootNode
             .filter(dataSelector)
-            .add( rootNode.find(dataSelector) ),
-        stencil;
-            
+            .add( rootNode.find(dataSelector) );
+        
     for (var propName in stash) {
-    
+        
         var stashProp = stash[propName];
         
         if ( $.isArray(stashProp) ) {
         
-            var $node = dataNodes.filter([
-                    '[data-templ="'+propName+'"]',
-                    '[data-templ-html="'+propName+'"]'
+            var $node = dataNodes
+                    .filter([
+                    '[data-templ~="'+propName+'"]',
+                    '[data-templ-html~="'+propName+'"]'
                     ].join(','));
                     
             if ($node.length) {
@@ -57,9 +79,14 @@ $.fn.temple = function(stash) {
         
         else {
             
-            dataNodes.templeLeaf(propName, stashProp);
+            var stashCopy = $.extend({}, stash);
             
+            delete stashCopy[propName];
+            
+            dataNodes
+                .templeLeaf(propName, stashProp, stashCopy);
         }
+        
     }
     
     return rootNode;

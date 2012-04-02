@@ -1,0 +1,13 @@
+{
+    header: "Colors",
+    items: [
+        {name: "red", url: null},
+        {name: "green", strong: null,
+            url: {attr: "href", value: "#Green"},
+        },
+        {name: "blue", strong: null,
+            url: {attr: "href", value: "#Blue"}
+        }
+    ],
+    empty: null
+}
