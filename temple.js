@@ -68,8 +68,9 @@ $.fn.temple = function(stash) {
                 if (stencil.length) {
                     stencil = stencil.clone();
                     $node.empty();
+                    $node.append(stencil.hide())
                     $.each(stashProp, function(index, stashArrayElem) {
-                        var $subNode = stencil.clone();
+                        var $subNode = stencil.clone().show();
                         $subNode.temple(stashArrayElem)
                         $node.append($subNode);
                     });
