@@ -42,9 +42,10 @@ http://dl.dropbox.com/u/362779/temple.js/index.html
     
 Todo:
 
-    * partial updates (and real life example)
     * ~~consider removing isCollectionNode and use firstChild as a stencil no matter what tag that is~~
     * ~~start looking for data-templ on the rootNode~~
-    * consider scenarion where stencil is a leaf node, and simplify stash creation
+    * ~~consider scenario where stencil is a leaf node, and simplify stash creation~~
     * ~~convert gist to a project~~
+    * partial updates (and real life example)
     * maybe returning augmented stash with references to html nodes
+        * last 2 points would require creating "ORM for HTML". Still toying with the idea
