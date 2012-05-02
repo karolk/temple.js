@@ -1,14 +1,26 @@
 (function($) {
 
-$.fn.templeLeaf = function(propName, propValue, currentStash) {
-    
+$.fn.templeLeaf = function(propValue, propName, currentStash) {
+        
     var typeOfPropValue = typeof propValue;
     
     switch(typeOfPropValue) {
     
         case 'string':
         case 'number':
-            var htmlContainer = this.filter('[data-templ-html~="'+propName+'"]');
+            var htmlContainer = this,
+                textContainer = this;
+            //because of simple templating sometimes we want to find a node
+            //that doesn't have the attribute data-templ, but in that case
+            //it should only be used by text templating
+            //example: $(node).templeLeaf('some text')
+            //html templating must always require data-templ-html on the node
+            if (propName) {
+                htmlContainer = htmlContainer.filter('[data-templ-html~="'+propName+'"]');
+            }
+            else {
+                htmlContainer = htmlContainer.filter('[data-templ-html]');
+            }
             
             if (htmlContainer.length) {
                 var newNodes = $(propValue);
@@ -19,11 +31,15 @@ $.fn.templeLeaf = function(propName, propValue, currentStash) {
                     //to be templated
                     currentStash && newNodes.temple(currentStash);
                 }
+                //short circuit to avoid doing both html and text
+                return;
             }
             
-            this
-                .filter('[data-templ~="'+propName+'"]')
-                .text(propValue);
+            if (propName) {
+                textContainer = textContainer.filter('[data-templ~="'+propName+'"]');
+            }
+            textContainer.text(propValue);
+            
         break;
         
         case 'object':
@@ -50,7 +66,7 @@ $.fn.temple = function(stash) {
         dataNodes = rootNode
             .filter(dataSelector)
             .add( rootNode.find(dataSelector) );
-        
+           
     for (var propName in stash) {
         
         var stashProp = stash[propName];
@@ -68,9 +84,16 @@ $.fn.temple = function(stash) {
                 if (stencil.length) {
                     stencil = stencil.clone();
                     $node.empty();
-                    $node.append(stencil.hide())
+                    $node.append(stencil.hide());
                     $.each(stashProp, function(index, stashArrayElem) {
                         var $subNode = stencil.clone().show();
+                        if (typeof stashArrayElem === 'string') {
+                            //we will ignore the key here and just template it
+                            //problem is it will not template the node without
+                            //the key
+                            $subNode.templeLeaf(stashArrayElem)
+                        }
+                        
                         $subNode.temple(stashArrayElem)
                         $node.append($subNode);
                     });
@@ -85,7 +108,7 @@ $.fn.temple = function(stash) {
             delete stashCopy[propName];
             
             dataNodes
-                .templeLeaf(propName, stashProp, stashCopy);
+                .templeLeaf(stashProp, propName, stashCopy);
         }
         
     }
