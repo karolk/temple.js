@@ -1,11 +1,11 @@
 (function($) {
 
 $.fn.templeLeaf = function(propValue, propName, currentStash) {
-        
+
     var typeOfPropValue = typeof propValue;
-    
+
     switch(typeOfPropValue) {
-    
+
         case 'string':
         case 'number':
             var htmlContainer = this,
@@ -21,7 +21,7 @@ $.fn.templeLeaf = function(propValue, propName, currentStash) {
             else {
                 htmlContainer = htmlContainer.filter('[data-templ-html]');
             }
-            
+
             if (htmlContainer.length) {
                 var newNodes = $(propValue);
                 if (newNodes.length) {
@@ -34,15 +34,16 @@ $.fn.templeLeaf = function(propValue, propName, currentStash) {
                 //short circuit to avoid doing both html and text
                 return;
             }
-            
+
             if (propName) {
                 textContainer = textContainer.filter('[data-templ~="'+propName+'"]');
             }
             textContainer.text(propValue);
-            
+
         break;
-        
+
         case 'object':
+        case 'function':
             if (propValue===null) {
                 this.filter('[data-templ~="'+propName+'"]').remove();
             }
@@ -52,9 +53,9 @@ $.fn.templeLeaf = function(propValue, propName, currentStash) {
                 .attr(propValue.attr, propValue.value);
             }
         break;
-        
+
     }
-    
+
     return this;
 
 }
@@ -66,19 +67,19 @@ $.fn.temple = function(stash) {
         dataNodes = rootNode
             .filter(dataSelector)
             .add( rootNode.find(dataSelector) );
-           
+
     for (var propName in stash) {
-        
+
         var stashProp = stash[propName];
-        
+
         if ( $.isArray(stashProp) ) {
-        
+
             var $node = dataNodes
                     .filter([
                     '[data-templ~="'+propName+'"]',
                     '[data-templ-html~="'+propName+'"]'
                     ].join(','));
-                    
+
             if ($node.length) {
                 stencil = $node.children().eq(0);
                 if (stencil.length) {
@@ -93,26 +94,26 @@ $.fn.temple = function(stash) {
                             //the key
                             $subNode.templeLeaf(stashArrayElem)
                         }
-                        
+
                         $subNode.temple(stashArrayElem)
                         $node.append($subNode);
                     });
                 }
-            }   
+            }
         }
-        
+
         else {
-            
+
             var stashCopy = $.extend({}, stash);
-            
+
             delete stashCopy[propName];
-            
+
             dataNodes
                 .templeLeaf(stashProp, propName, stashCopy);
         }
-        
+
     }
-    
+
     return rootNode;
 
 }
