@@ -1,11 +1,20 @@
 (function($) {
 
+//exit where there is no $ (jQuery or Zepto)
+if (typeof $ === 'undefined') {
+	return;
+}
+
+//used for actual templating when the node is a leaf node
 $.fn.templeLeaf = function(propValue, propName, currentStash) {
 
     var typeOfPropValue = typeof propValue;
 
     switch(typeOfPropValue) {
 
+		//when value is a primitive (string and number are assumed to be easily
+		//convertible to text) just put the value in the node with the default
+		//way (depending on the node type)
         case 'string':
         case 'number':
             var htmlContainer = this,
@@ -21,24 +30,37 @@ $.fn.templeLeaf = function(propValue, propName, currentStash) {
             else {
                 htmlContainer = htmlContainer.filter('[data-templ-html]');
             }
-
+			//if we need to use HTML
             if (htmlContainer.length) {
-                var newNodes = $(propValue);
-                if (newNodes.length) {
-                    htmlContainer.empty().append(newNodes);
-                    //newly created stash might complain data-templ
-                    //attribs, then they might want to attempt
-                    //to be templated
-                    currentStash && newNodes.temple(currentStash);
-                }
+				htmlContainer.empty().html( propValue );
+				//newly created stash might complain data-templ
+				//attribs, then they might want to attempt
+				//to be templated
+				currentStash && htmlContainer.children().temple(currentStash);
+
                 //short circuit to avoid doing both html and text
                 return;
             }
 
+			//defaults to text
+			//uses value for input types
             if (propName) {
                 textContainer = textContainer.filter('[data-templ~="'+propName+'"]');
             }
-            textContainer.text(propValue);
+            textContainer.each(function(i, node) {
+            	switch ( node.nodeName ) {
+
+					case 'INPUT':
+					case 'TEXTAREA':
+						$(node).val( propValue );
+					break;
+
+					default:
+						console.log( node.nodeName );
+						$(node).text( propValue )
+					break;
+            	}
+            });
 
         break;
 
@@ -58,8 +80,9 @@ $.fn.templeLeaf = function(propValue, propName, currentStash) {
 
     return this;
 
-}
+};
 
+//used on a root node, traverses the tree looking for nodes to template
 $.fn.temple = function(stash) {
     var rootNode = this,
         dataSelector = '[data-templ], [data-templ-html]',
@@ -116,5 +139,6 @@ $.fn.temple = function(stash) {
 
     return rootNode;
 
-}
+};
+
 })($);
