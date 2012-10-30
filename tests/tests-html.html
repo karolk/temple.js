@@ -1,0 +1,218 @@
+<!doctype html>
+
+<html>
+
+<title>temple.js examples</title>
+
+<div id="tests-html">
+    <span id="hello" data-templ="hello"></span>
+
+	<span id="hello_html" data-templ-html="hello"></span>
+
+    <!-- documentation example, always has to work -->
+    <ul id="shopping-list" data-templ="shopping_list">
+        <li>
+            <span data-templ="product_name"></span>
+            <span data-templ="product_price"></span>
+        </li>
+    </ul>
+
+    <ul id="shopping-list2" data-templ="shopping_list2">
+        <li>
+            <span data-templ="product_name"></span>
+            <span data-templ="product_price"></span>
+            <ul data-templ="avail_colors">
+                <li data-templ="color_name"></li>
+            </ul>
+        </li>
+    </ul>
+
+    <ul id="fish" data-templ="fish">
+        <li data-templ-html="fish">
+        </li>
+    </ul>
+
+    <ul id="want-html">
+        <li data-templ-html="raw_html"></li>
+    </ul>
+
+    <ul id="repeat">
+        <li data-templ="boy_name"></li>
+        <li data-templ="girl_name"></li>
+        <li data-templ="boy_name"></li>
+    </ul>
+
+    <ul id="seasons" data-templ="values">
+        <input data-templ="name">
+    </ul>
+
+	<ul id="seasons2" data-templ="values">
+        <input data-templ="name">
+    </ul>
+
+	<ul id="seasons3" data-templ="values">
+        <input>
+    </ul>
+
+    <div id="moustache">
+        <h1 data-templ="header"></h1>
+        <ul data-templ="items">
+            <li>
+                <strong data-templ="strong name"></strong>
+                <a href="#" data-templ="url name"></a>
+            </li>
+        </ul>
+        <p data-templ="empty">The list is empty.</p>
+    </div>
+
+	<p>The one below doesn't have markings on the stencil</p>
+    <ul id="fish-simple" data-templ="fish">
+        <li></li>
+    </ul>
+
+    <ul id="fish-simple-html" data-templ="fish">
+        <li data-templ-html></li>
+    </ul>
+</div>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+
+<script src="https://raw.github.com/karolk/temple.js/master/jquery.temple.js"></script>
+
+<script>
+    $('#hello').temple({hello: 'Hello World!'});
+
+	$('#hello_html').temple({hello: '<h1>Hello World!</h1>'});
+
+    var stash = {
+        shopping_list: [
+            {
+                product_name: 'Alfajores',
+                product_price: 15.99
+            },
+            {
+                product_name: 'Medialunas',
+                product_price: 2.99
+            },
+            {
+                product_name: 'Bombones',
+                product_price: 15.99
+            }
+        ]
+    };
+
+    $('#shopping-list').temple(stash);
+
+    var stash2 = {
+        shopping_list2: [
+            {
+                product_name: 'Alfajores',
+                product_price: 15.99,
+                avail_colors: [
+                    {color_name: 'Blanco'},
+                    {color_name: 'Negro'}
+                ]
+            },
+            {
+                product_name: 'Medialunas',
+                product_price: 2.99,
+                avail_colors: [
+                    {color_name: 'Verde'},
+                    {color_name: 'Azul'}
+                ]
+            },
+            {
+                product_name: 'Bombones',
+                product_price: 15.99,
+                avail_colors: [
+                    {color_name: 'Grises'},
+                    {color_name: 'Rojo'}
+                ]
+            },
+            //partial data
+            {
+                product_name: 'Croissants',
+                avail_colors: 'Out of stock'
+            }
+        ]
+    };
+
+    $('#shopping-list2').temple(stash2);
+
+    $('#fish').temple({
+        fish: [
+            {
+                fish: '<b>salmon</b>'
+            },
+            {
+                fish: 'trout'
+            },
+            {
+                fish: 'cod'
+            }
+        ]
+    });
+
+    $('#want-html').temple({
+        raw_html: '<strong>bold</strong> and <em>beautiful</em>'
+    });
+
+    $('#repeat').temple({
+        boy_name: 'Guy',
+        girl_name: 'Jane'
+    });
+
+    $('#seasons').temple({
+        values: [
+            {
+                name: {attr: 'value', value: 'Spring'}
+            },
+            {
+                name: {attr: 'value', value: 'Summer'}
+            },
+            {
+                name: {attr: 'value', value: 'Autumn'}
+            }
+        ]
+    });
+
+    $('#seasons2').temple({
+        values: ['Spring', 'Summer', 'Autumn']
+    });
+
+    $('#seasons3').temple({
+        values: ['Spring', 'Summer', 'Autumn']
+    });
+
+    $('#moustache').temple({
+        header: "Colors",
+        items: [
+            {name: "red", url: null},
+            {name: "green", strong: null,
+                url: {attr: "href", value: "#Green"}
+            },
+            {name: "blue", strong: null,
+                url: {attr: "href", value: "#Blue"}
+            }
+        ],
+        empty: null
+    });
+
+    $('#fish-simple').temple({
+        fish: [
+            'salmon',
+            'trout',
+            'cod'
+            ]
+    })
+
+    $('#fish-simple-html').temple({
+        fish: [
+            'salmon'.link('http://www.google.com'),
+            'trout'.link('http://www.google.com'),
+            '<b>cod</b>'.link('http://www.google.com')
+            ]
+    })
+
+</script>
+
+</html>
