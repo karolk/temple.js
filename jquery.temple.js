@@ -1,4 +1,4 @@
-(function($) {
+(function() {
 
 //exit where there is no $ (jQuery or Zepto)
 if (typeof $ === 'undefined') {
@@ -140,4 +140,4 @@ $.fn.temple = function(stash) {
 
 };
 
-})($);
+})();
