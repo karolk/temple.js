@@ -56,7 +56,6 @@ $.fn.templeLeaf = function(propValue, propName, currentStash) {
 					break;
 
 					default:
-						console.log( node.nodeName );
 						$(node).text( propValue )
 					break;
             	}
