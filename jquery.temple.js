@@ -82,7 +82,7 @@ $.fn.templeLeaf = function(propValue, propName, currentStash) {
 };
 
 //used on a root node, traverses the tree looking for nodes to template
-$.fn.temple = function(stash) {
+$.fn.temple = function(stash, stencil) {
     var rootNode = this,
         dataSelector = '[data-templ], [data-templ-html]',
         stencil,
@@ -103,7 +103,9 @@ $.fn.temple = function(stash) {
                     ].join(','));
 
             if ($node.length) {
-                stencil = $node.children().eq(0);
+            	if (typeof stencil === 'undefined' || !stencil.length) {
+                	stencil = $node.children().eq(0);
+                }
                 if (stencil.length) {
                     stencil = stencil.clone();
                     $node.empty();
