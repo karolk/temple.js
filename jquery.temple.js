@@ -142,4 +142,93 @@ $.fn.temple = function(stash, stencil) {
 
 };
 
+//very simple comparator used by compareArrays
+function compareSimple(a, b) {
+    return a==b;
+}
+
+//compareArrays will return an object with optimal, necessary transformations
+//to make array1 like array2
+function compareArrays(current, changed) {
+
+    'use strict';
+
+    var ret = {
+        deleted: [],
+        moved: [],
+        added: []
+    }
+
+    //copy
+    current = current.slice();
+    changed = changed.slice();
+
+    //find missing
+    var i=0, l=current.length, j=0, k=changed.length,
+        missing = [], used = new Array(k), foundInChanged;
+    for (;i<l;i++) {
+        if ( current[i]!=null && changed[i]!=null && compareSimple(current[i], changed[i]) ) {
+            used[i] = true;
+            continue;
+        }
+        else {
+            missing.push(i);
+        }
+    }
+
+    //find which missing are definitely not moved and emit delete
+    i=0;l=missing.length;
+    for (;i<l;i++) {
+        foundInChanged = false;
+        for (j=0;j<k;j++) {
+            //if this element can be found in changed, but the index is different
+            //treat is as moved and mark the slot as used
+            if ( current[missing[i]]!=null && changed[j]!=null && compareSimple(current[missing[i]], changed[j]) && !used[j]) {
+                used[j] = true;
+                foundInChanged = true;
+                break;
+            }
+        }
+        if ( !foundInChanged ) {
+            ret.deleted.push( missing[i] );
+        }
+    }
+
+    //delete
+    i=0;l=ret.deleted.length;
+    for (;i<l;i++) {
+        current.splice(ret.deleted[i], 1);
+    }
+
+    //things may look like they were moved because new things were inserted
+    //calculate the insertions first, maybe it will not looked moved anymore
+
+    //on the other hand it's hard to calculate insertion points when changed is still
+    //not aligned with current, because things were not moved yet
+    i=0;l=used.length;
+    for (;i<l;i++) {
+        if ( !used[i] ) {
+            ret.added.push(i);
+        }
+    }
+
+    //add
+    i=0;l=ret.added.length;
+    for (;i<l;i++) {
+        current.splice(ret.added[i], 0, changed[ret.added[i]]);
+    }
+
+    //loop over changed and find things not aligned with current
+    i=0;l=changed.length;
+    for (;i<l;i++) {
+        if (changed[i]!=null && current[i]!=null && !compareSimple(current[i], changed[i]) ) {
+        current.splice(i, 0, changed[i]);
+        ret.moved.push(i);
+        }
+    }
+
+
+    return ret;
+
+};
 })();
