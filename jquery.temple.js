@@ -107,12 +107,6 @@ $.fn.templeLeaf = function(propValue, propName, currentStash) {
             			if (typeof oldValue=='undefined') {
             				oldValue = leafNode.attr(jqPropAttr)||'';
             			}
-            			//problem here is when appending attributes
-            			//sometimes you want to add them after a space
-            			//and sometimes you just want to append
-            			//for now we will just add a space bu default
-            			//because there doesn't seem to be any obvious use case
-            			//for other scenario
             			return oldValue.replace(propValue.value, '');
             		}
 				}
