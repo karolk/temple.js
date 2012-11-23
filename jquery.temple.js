@@ -8,7 +8,8 @@ if (typeof $ === 'undefined') {
 //used for actual templating when the node is a leaf node
 $.fn.templeLeaf = function(propValue, propName, currentStash) {
 
-    var typeOfPropValue = typeof propValue;
+    var typeOfPropValue = typeof propValue,
+    	leafNode = this;
 
     switch(typeOfPropValue) {
 
@@ -17,8 +18,8 @@ $.fn.templeLeaf = function(propValue, propName, currentStash) {
 		//way (depending on the node type)
         case 'string':
         case 'number':
-            var htmlContainer = this,
-                textContainer = this;
+            var htmlContainer = leafNode,
+                textContainer = leafNode;
             //because of simple templating sometimes we want to find a node
             //that doesn't have the attribute data-templ, but in that case
             //it should only be used by text templating
@@ -39,7 +40,7 @@ $.fn.templeLeaf = function(propValue, propName, currentStash) {
 				currentStash && htmlContainer.children().temple(currentStash);
 
                 //short circuit to avoid doing both html and text
-                return;
+                return leafNode;
             }
 
 			//defaults to text
@@ -70,18 +71,62 @@ $.fn.templeLeaf = function(propValue, propName, currentStash) {
         case 'object':
         case 'function':
             if (propValue===null) {
-                this.filter('[data-templ~="'+propName+'"]').remove();
+                leafNode.filter('[data-templ~="'+propName+'"]').remove();
             }
             else {
-                this
-                .filter('[data-templ~="'+propName+'"]')
-                .attr(propValue.attr, propValue.value);
+            	var jqPropValue = propValue.value,
+            		jqPropAttr = propValue.attr;
+            	//if attr name is preceded with a + we need to
+            	//append a new value, rather than swap
+            	//this is typical when adding classes
+            	//but we will make it generic
+            	if ( jqPropAttr.charAt(0)=='+' ) {
+					jqPropAttr = jqPropAttr.substr(1);
+            		jqPropValue = function(i, oldValue) {
+            			//jQuery is supposed to pass an oldValue,
+            			//but it sometimes fails (in case of a class)
+            			if (typeof oldValue=='undefined') {
+            				oldValue = leafNode.attr(jqPropAttr)||'';
+            			}
+            			//problem here is when appending attributes
+            			//sometimes you want to add them after a space
+            			//and sometimes you just want to append
+            			//for now we will just add a space bu default
+            			//because there doesn't seem to be any obvious use case
+            			//for other scenario
+            			return oldValue + ' ' + propValue.value;
+            		}
+
+				}
+
+				if ( jqPropAttr.charAt(0)=='-' ) {
+					jqPropAttr = jqPropAttr.substr(1);
+            		jqPropValue = function(i, oldValue) {
+            			//jQuery is supposed to pass an oldValue,
+            			//but it sometimes fails (in case of a class)
+            			if (typeof oldValue=='undefined') {
+            				oldValue = leafNode.attr(jqPropAttr)||'';
+            			}
+            			//problem here is when appending attributes
+            			//sometimes you want to add them after a space
+            			//and sometimes you just want to append
+            			//for now we will just add a space bu default
+            			//because there doesn't seem to be any obvious use case
+            			//for other scenario
+            			return oldValue.replace(propValue.value, '');
+            		}
+				}
+
+                leafNode
+                	.filter('[data-templ~="'+propName+'"]')
+                	.attr(jqPropAttr, jqPropValue);
+
             }
         break;
 
     }
 
-    return this;
+    return leafNode;
 
 };
 
