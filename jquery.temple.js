@@ -103,13 +103,35 @@ $.fn.temple = function(stash, stencil) {
                     ].join(','));
 
             if ($node.length) {
-            	if (typeof stencil === 'undefined' || !stencil.length) {
-                	stencil = $node.children().eq(0);
-                }
+            	//look for stencil
+            	//1. The stencil can be passed as a jQuery compatible argument
+            	//make sure we have a jQuery compatible argument to work with
+				if (typeof stencil !== 'undefined') {
+					if (typeof stencil.jquery == 'undefined') {
+						stencil = $(stencil);
+					}
+				}
+				else {
+				//2. look for previously cached stencil
+					var cachedStencil = $node.data('temple-stencil');
+					if (cachedStencil && cachedStencil.length) {
+						stencil = cachedStencil
+					}
+				//3. treat 1st child of the element as a stencil
+					else {
+						stencil = $node.children().eq(0);
+					}
+				}
+
                 if (stencil.length) {
                     stencil = stencil.clone();
                     $node.empty();
-                    $node.append(stencil.hide());
+
+                    //cache stencil on the node
+                    //this might be incompatible with zepto as it doesn't save
+                    //object in data
+                    $node.data('temple-stencil', stencil.clone());
+
                     $.each(stashProp, function(index, stashArrayElem) {
                         var $subNode = stencil.clone().show();
                         if (typeof stashArrayElem === 'string') {
@@ -122,6 +144,7 @@ $.fn.temple = function(stash, stencil) {
                         $subNode.temple(stashArrayElem)
                         $node.append($subNode);
                     });
+
                 }
             }
         }

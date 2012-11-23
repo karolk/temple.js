@@ -21,8 +21,8 @@ describe("jquery.temple.js templating", function() {
     	$('.templates .stencil')
     );
 
-    expect($('#inserted_stencil li a').length).toEqual(4); //3 plus stencil
-    expect($('#inserted_stencil li a').text()).toEqual('testOneTwoThree');
+    expect($('#inserted_stencil li a').length).toEqual(3); //3 plus stencil
+    expect($('#inserted_stencil li a').text()).toEqual('OneTwoThree');
 
   });
 
