@@ -47,7 +47,7 @@ Temple.js will also allow you to change attributes (and allow multiple template 
 
 With temple.js you don't always have to be explicit about how you want to populate elements, for example form elements will just work, without having to specify attributes
 	
-	<select class="my-select" data-templ="groups"
+	<select class="my-select" data-templ="groups">
 		<optgroup data-templ="label opts">
 			<option></option>
 		</opgroup>
@@ -80,9 +80,6 @@ can be modified to
 	['B', 'A', 'C', 'D', 'E', 'G'] //swap B with A, remove F, add G
 	
 The templating system should not have to re-render the entire dom tree corresponding to this collection but only manipulate the nodes that were affected.
-
-2. Attribute modifiers
-
 
 
 
