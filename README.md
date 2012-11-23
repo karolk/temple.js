@@ -66,6 +66,11 @@ With temple.js you don't always have to be explicit about how you want to popula
 More live examples:
 
 http://dl.dropbox.com/u/362779/temple.js/index.html
+
+Tests:
+
+http://dl.dropbox.com/u/362779/temple.js/tests/index.html
+(please write more, this is only the beginning)
     
 Todo:
 
