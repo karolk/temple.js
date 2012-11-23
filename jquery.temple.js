@@ -55,6 +55,10 @@ $.fn.templeLeaf = function(propValue, propName, currentStash) {
 						$(node).val( propValue );
 					break;
 
+					case 'OPTGROUP':
+						$(node).attr( 'label', propValue );
+					break;
+
 					default:
 						$(node).text( propValue )
 					break;
